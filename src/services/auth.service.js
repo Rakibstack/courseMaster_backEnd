@@ -51,10 +51,9 @@ const register = async ({ name, email, password, adminKey }) => {
 
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
-  if (!user) throw new Error("Invalid email or password");
+  if (!user) throw new Error("User dose not exist");
 
-  // Code-5 bug: plaintext equality check instead of bcrypt.compare
-  const match = password === user.passwordHash;
+  const match = await bcrypt.compare(password, user.passwordHash);
   if (!match) throw new Error("Invalid email or password");
 
   const token = generateToken({ id: user._id, role: user.role });
